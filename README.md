@@ -20,6 +20,6 @@ Aplikasi sederhana yang menggunakan konsep RESTFULL API, API Google Maps dan JWT
 - Composer
 	- /myspace > composer install / composer update
 - Env
-	-GMAPS_API={YOUR_MAPS_JAVASCRIPT_API_KEY}
+	- GMAPS_API={YOUR_MAPS_JAVASCRIPT_API_KEY}
 - Migration
 	- /myspace > php artisan migrate
