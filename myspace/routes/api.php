@@ -30,6 +30,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::get('/space/neighbordhoods', 'Api\Spaces@neighbord');
     Route::post('/space/create', 'Api\Spaces@create');
+    Route::post('/space/update', 'Api\Spaces@update');
     Route::put('/space/update', 'Api\Spaces@update');
     Route::delete('/space/delete', 'Api\Spaces@delete');
 });

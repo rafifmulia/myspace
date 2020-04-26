@@ -44,6 +44,14 @@
                         <label for="">village</label>
                         <input type="text" name="village" class="form-control" value="{{ $space['village'] }}">
                     </div>
+                    <div class="form-inline">
+                        <label for="">Upload Photo</label>
+                        <input type="file" name="img[]" class="form-control col-md-11">
+                        <button type="button" class="btn btn-primary col-md-1 btnAdd"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="form-group" id="multiplePhoto">
+                        
+                    </div>
                     <button type="submit" id="btnUpdate" class="btn btn-primary">Update</button>
                 </form>
             </div>
@@ -129,14 +137,35 @@ function clearMarkers() {
 
 $('#btnUpdate').on('click', function (e) {
     e.preventDefault();
+
+    var data = $('#formUpdate').serializeArray();
+    var files = $('input[name="img[]"]');
+
+    var i = data.length;
+    for (var row of files) {
+        for (var file of row.files) {
+            data[i] = {
+                name: "img[]",
+                value: file
+            };
+        }
+        i++;
+    }
+
+    var formData = new FormData();
+    for (var row of data) {
+        formData.append(row.name, row.value);
+    }
+
     $.ajax({
         url: '/api/space/update',
-        method: 'put',
+        method: 'post',
         headers: {
             'Authorization': 'Bearer '+$.cookie('at')
         },
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        data: $('#formUpdate').serialize(),
+        contentType: false,
+        processData: false,
+        data: formData,
         dataType: 'json',
         success: function (data, textStatus, jqxhr) {
             if (data.hasOwnProperty('success')) {

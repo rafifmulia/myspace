@@ -10,7 +10,7 @@ class Pages extends Controller
     public function space_index(Request $req)
     {
         $jwt = $req->jwt;
-        $spaces = Spaces::where('user_id', $jwt->id)->simplePaginate(2);
+        $spaces = Spaces::where('user_id', $jwt->id)->simplePaginate(10);
         return view('pages.spaces.index', compact('jwt'), compact('spaces'));
     }
     public function space_create(Request $req)

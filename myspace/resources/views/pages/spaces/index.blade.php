@@ -16,7 +16,7 @@
     </div>
 </div>
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div id="indexSpace" class="col-md-8">
         @foreach ($spaces as $space)
         <div class="card mb-2">
             <div class="card-header bg-primary text-white">{{ $space->title }}</div>
@@ -27,7 +27,7 @@
                     {{ $space->region }}, {{ $space->district }}, {{ $space->village }}
                 </div>
                 <a href="{{ route('space.edit', ['id'=>$space->id]) }}" class="btn btn-primary">Edit</a>
-                <button type="button" data-id="{{ $space->id }}" id="btnDelete" class="btn btn-danger">Delete</button> <br>
+                <button type="button" data-id="{{ $space->id }}" class="btn btn-danger btnDelete">Delete</button> <br>
                 <a href="{{ route('space.direction', ['id'=>$space->id]) }}" class="card-link">Direction</a>
             </div>
         </div>
@@ -39,7 +39,9 @@
 
 @push('scripts')
 <script>
-$('#btnDelete').on('click', function() {
+$('#indexSpace').on('click', '.btnDelete', function(e) {
+    var id = $(e.target).attr('data-id');
+
     $.ajax({
         url: '/api/space/delete',
         method: 'delete',
@@ -47,7 +49,7 @@ $('#btnDelete').on('click', function() {
             'Authorization': 'Bearer '+$.cookie('at')
         },
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        data: {id: $('#btnDelete').attr('data-id')},
+        data: {id: id},
         dataType: 'json',
         success: function (data, textStatus, jqxhr) {
             if (data.hasOwnProperty('success')) {

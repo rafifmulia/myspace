@@ -3,7 +3,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Model\Spaces as SpaceModel;
+use App\Model\SpacePhotos;
 
 class Spaces extends Controller {
     public function create(Request $req)
@@ -16,7 +18,11 @@ class Spaces extends Controller {
             'region' => 'required|min:5',
             'district' => 'required|min:5',
             'village' => 'required|min:5',
+            'img' => 'required|max:2048'
         ]);
+
+
+        // store input data
         $input = $req->input();
         $input['user_id'] = $req->jwt->id;
 
@@ -25,6 +31,23 @@ class Spaces extends Controller {
         } catch (\Exception $e) {
             return response()->json([
                 'message'=>'Error when insert to database',
+                'errors'=> new \stdClass()
+            ]);
+        }
+
+        // store image
+        try {
+            foreach ($req->file('img') as $file) {
+                $path = 'spaces/photos/';
+                $storage = Storage::disk('public')->put($path, $file);
+                $storage = explode('//', $storage);
+                SpacePhotos::create(['path'=>$path, 'filename'=>$storage[1], 'space_id'=>$space->id]);
+            }
+        } catch (\Exception $e) {
+            SpaceModel::destroy($space->id);
+
+            return response()->json([
+                'message'=>'Error store image, please upload another image',
                 'errors'=> new \stdClass()
             ]);
         }
@@ -47,16 +70,37 @@ class Spaces extends Controller {
             'district' => 'required|min:5',
             'village' => 'required|min:5',
         ]);
-        $input = $req->except(['id']);
-        $input['user_id'] = $req->jwt->id;
+        $input = $req->except(['id', 'img']);
 
         try {
             $space = SpaceModel::where('id', $req->input('id'))->update($input);
         } catch (\Exception $e) {
             return response()->json([
-                'message'=>'Error when update to database',
+                'message'=>'Error when update',
                 'errors'=> new \stdClass()
             ]);
+        }
+
+        if ($req->hasFile('img')) {
+            try {
+                $photos = SpacePhotos::where('space_id', $req->input('id'))->get();
+                foreach ($photos as $photo) {
+                    Storage::disk('public')->delete($photo->path.$photo->filename);
+                }
+                SpacePhotos::where('space_id', $req->input('id'))->delete();
+                
+                foreach ($req->file('img') as $file) {
+                    $path = 'spaces/photos/';
+                    $storage = Storage::disk('public')->put($path, $file);
+                    $storage = explode('//', $storage);
+                    SpacePhotos::create(['path'=>$path, 'filename'=>$storage[1], 'space_id'=>$req->input('id')]);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message'=>'Error when upload image, please try another image',
+                    'errors'=> new \stdClass()
+                ]);
+            }
         }
         
         return response()->json([
@@ -72,7 +116,12 @@ class Spaces extends Controller {
         ]);
 
         try {
-            $space = SpaceModel::where('id', $req->input('id'))->delete();
+            // SpaceModel::where('id', $req->input('id'))->delete();
+            $photos = SpacePhotos::where('space_id', $req->input('id'))->get();
+            foreach ($photos as $photo) {
+                Storage::disk('public')->delete($photo->path.$photo->filename);
+            }
+            SpacePhotos::where('space_id', $req->input('id'))->delete();
         } catch (\Exception $e) {
             return response()->json([
                 'message'=>'Error when delete to database',

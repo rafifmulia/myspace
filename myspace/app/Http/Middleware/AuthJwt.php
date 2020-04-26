@@ -33,7 +33,7 @@ class AuthJwt
             } else {
                 $is_web = true;
             }
-
+            
             // get access_token from bearer, if cannot be decoded, return error
             if (!$is_web) {
                 try {

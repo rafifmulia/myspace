@@ -9,7 +9,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title text-center bg-primary text-white p-3"><h3>Submit Your Space</h3></div>
-                <form id="formCreate">
+                <form id="formCreate" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="">Title</label>
                         <input type="text" name="title" class="form-control">
@@ -39,6 +39,14 @@
                     <div class="form-group">
                         <label for="">village</label>
                         <input type="text" name="village" class="form-control">
+                    </div>
+                    <div class="form-inline">
+                        <label for="">Upload Photo</label>
+                        <input type="file" name="img[]" class="form-control col-md-11">
+                        <button type="button" class="btn btn-primary col-md-1 btnAdd"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="form-group" id="multiplePhoto">
+                        
                     </div>
                     <button type="submit" id="btnSubmit" class="btn btn-primary">Submit</button>
                 </form>
@@ -128,22 +136,43 @@ function getPosDragMarker(markerObj) {
 
 $('#btnSubmit').on('click', function (e) {
     e.preventDefault();
+
+    var data = $('#formCreate').serializeArray();
+    var files = $('input[name="img[]"]');
+
+    var i = data.length;
+    for (var row of files) {
+        for (var file of row.files) {
+            data[i] = {
+                name: "img[]",
+                value: file
+            };
+        }
+        i++;
+    }
+
+    var formData = new FormData();
+    for (var row of data) {
+        formData.append(row.name, row.value);
+    }
+
     $.ajax({
         url: '/api/space/create',
         method: 'post',
         headers: {
             'Authorization': 'Bearer '+$.cookie('at')
         },
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        data: $('#formCreate').serialize(),
+        contentType: false,
+        data: formData,
         dataType: 'json',
+        processData: false,
         success: function (data, textStatus, jqxhr) {
             if (data.hasOwnProperty('success')) {
                 alert("Data created")
                 window.location.href = '/space';
                 return ;
             }
-            alert('Error when insert to database');
+            alert(data.message);
         },
         error: function (jqxhr, textStatus, error) {
             alert(error)
@@ -152,25 +181,21 @@ $('#btnSubmit').on('click', function (e) {
     });
 });
 
-// example ajax
-function ajax() {
-    $.ajax({
-        url: '/api/example',
-        method: 'get',
-        headers: {
-            'Authorization': 'Bearer '+$.cookie('at')
-        },
-        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-        data: {},
-        dataType: 'json',
-        success: function (data, textStatus, jqxhr) {
+$('.btnAdd').on('click', function (e) {
+    let newElement = $(' \
+    <div class="form-inline mt-2"> \
+        <input type="file" name="img[]" class="form-control col-md-11" required> \
+        <button type="button" class="btn btn-danger col-md-1 btnDel"><i class="fas fa-minus"></i></button> \
+    </div>');
 
-        },
-        error: function (jqxhr, textStatus, error) {
+    $('#multiplePhoto').append(newElement);
+});
 
-        },
-    });
-}
+$('#formCreate').on('click', '.btnDel', function (e) {
+    let target = e.target;
+    target.closest('.form-inline').remove();
+});
+
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GMAPS_API') }}&callback=initMap" async defer></script>
 @endpush
