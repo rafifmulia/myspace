@@ -8,13 +8,15 @@
 	- Migration
 
 ## Introduction
-Aplikasi sederhana yang menggunakan konsep RESTFULL API, API Google Maps dan JWT sebagai Auth
+Aplikasi sederhana untuk memanagement lokasi (menyimpan lokasi, merubah, hapus) yang menggunakan Maps Javascript API, konsep RESTFULL API, dan JWT sebagai Auth
 
 ## Reguirements
 - Laravel 7.5.2
+- Jquery 3.5.0
 - Maps Javascript API Key
 	- Maps Javascript API
 	- Directions API
+- Bootstrap 4.3.1
 
 ## SetUp
 - Composer

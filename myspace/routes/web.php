@@ -20,6 +20,7 @@ Route::post('/login/auth', 'Auth@web_login')->name('web.auth.login');
 Route::post('/refresh/auth', 'Auth@web_refresh')->name('web.auth.refresh');
 Route::get('/register', 'Auth@registerView')->name('register');
 Route::post('/register/auth', 'Auth@register')->name('web.auth.register');
+Route::get('/logout', 'Auth@logout')->name('logout');
 
 // auth session
 Route::middleware(['auth.cookie'])->group(function () {

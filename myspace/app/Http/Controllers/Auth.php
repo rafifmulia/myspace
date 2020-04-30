@@ -98,4 +98,22 @@ class Auth extends Controller
 
         return response()->json(["message"=>"please login!"]);
     }
+
+    public function logout()
+    {
+        setcookie("at", null, [
+            'expires'=>0,
+            'path'=>'/',
+            'httponly'=>false,
+            'samesite'=>'Strict'
+        ]);
+        setcookie("rt", null, [
+            'expires'=>0,
+            'path'=>'/',
+            'httponly'=>false,
+            'samesite'=>'Strict'
+        ]);
+
+        return redirect()->route('login');
+    }
 }
