@@ -8,7 +8,7 @@
 	- Migration
 
 ## Introduction
-Aplikasi sederhana untuk memanagement lokasi (menyimpan lokasi, merubah, hapus) yang menggunakan Maps Javascript API, konsep RESTFULL API, dan JWT sebagai Auth
+Aplikasi sederhana untuk memanagement lokasi (menyimpan lokasi, merubah, hapus) yang menggunakan Maps Javascript API, konsep RESTFULL API, dan JWT sebagai Auth. dan bukan hanya crud, namun terdapat fitur yang bisa memunculkan lokasi2 yang telah tersimpan apabila terjangkau dengan radius dari sebuah lokasi.
 
 ## Reguirements
 - Laravel 7.5.2
